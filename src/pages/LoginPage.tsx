@@ -10,20 +10,61 @@ import { registerPageSchema } from '../schemas/RegisterPageSchema';
 import { useNavigate } from 'react-router-dom'
 import '../css/LoginPage.css'
 import LoginPageService from '../services/LoginPageService';
+import { useDispatch } from 'react-redux';
+import { setCurrentUser, setLoading } from '../redux/appSlice';
+import { UserType } from '../types/Types';
+import { toast } from 'react-toastify';
 
-
+interface CheckUserType{
+  result:boolean,
+  currentUser:UserType | null
+}
 
 function LoginPage() {
 
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
+
+
+
+  const checkUser = (userList:UserType[],username:string,password:string):CheckUserType => {
+    const response:CheckUserType = {
+      result:false,
+      currentUser:null
+    }
+
+    userList.forEach((user:UserType)=>{
+      if(user.username === username && user.password === user.password){
+          response.result = true
+          response.currentUser = user
+      }
+    })
+
+    return response
+  }
 
   const submit = async(values:any,action:any) => {
     //servis çağırırken
       try { //kişi email şifre girdi.
-        await LoginPageService.login()
-        
+        dispatch(setLoading(true))
+        const response:UserType[] = await LoginPageService.login()
+        if(response){
+          const checkUserResponse:CheckUserType= checkUser(response,values.username,values.password)
+
+          if(checkUserResponse.result && checkUserResponse.currentUser){
+            dispatch(setCurrentUser(checkUserResponse.currentUser))
+            localStorage.setItem("currentUser",JSON.stringify(checkUserResponse.currentUser))
+            navigate("/")
+          }else{
+
+          }
+        }
       } catch (error) {
-        
+        toast.error("Giriş yapılırken hata oluştu. " + error)
+      }
+      finally{
+        dispatch(setLoading(false))
       }
   }
   

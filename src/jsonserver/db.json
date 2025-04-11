@@ -9,6 +9,12 @@
       "id": "1073",
       "username": "enes",
       "password": "6789"
+    },
+    {
+      "id": "973",
+      "username": "abc123",
+      "password": "123",
+      "balance": 1000
     }
   ]
 }
