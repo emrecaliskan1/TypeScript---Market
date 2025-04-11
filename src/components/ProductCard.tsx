@@ -26,7 +26,11 @@ function ProductCard(props:ProductCardProps) {
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {description.substring(0,200)}...
         </Typography>
+        
       </CardContent>
+      <div>
+        <h2 style={{fontFamily:'arial'}}>{price}$</h2>
+      </div>
       <CardActions>
         <Button size="small" variant='outlined' color='info'>Detay</Button>
         
