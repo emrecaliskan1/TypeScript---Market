@@ -11,8 +11,12 @@ import eicon from '../images/logo.jpg'
 import { useNavigate } from 'react-router-dom';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useDispatch } from 'react-redux';
-import { setCurrentUser } from '../redux/appSlice';
+import { filterProducts, setCurrentUser, setProducts } from '../redux/appSlice';
 import { toast } from 'react-toastify';
+import ProductService from '../services/ProductService';
+import { ProductType } from '../types/Types';
+import { FaBasketShopping } from "react-icons/fa6";
+import Badge from '@mui/material/Badge';
 
 function Navbar() {
 
@@ -24,6 +28,22 @@ function Navbar() {
         dispatch(setCurrentUser(null))
         navigate("/login")
         toast.success("Başarıyla çıkış yapıldı.")
+    }
+
+    const handleFilter = async (e:React.ChangeEvent<HTMLInputElement>)=>{
+       try {
+          if(e.target.value){
+            dispatch(filterProducts(e.target.value))
+          }else{
+            //tüm ürünler
+             const products:ProductType[]=await ProductService.getAllProducts() 
+              dispatch(setProducts(products))
+          }
+       } 
+        catch (error) {
+          toast.error("Filtreleme yapılırken hata oluştu.")
+       }
+
     }
 
   return (
@@ -44,6 +64,7 @@ function Navbar() {
       </Typography>
       <div style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
       <TextField
+                        onChange={(e:React.ChangeEvent<HTMLInputElement>)=>handleFilter(e)}
                         sx={{width:'300px',marginBottom:'25px',marginRight:'20px'}}
                         id="searchInput"
                         placeholder='Bir şey ara...'
@@ -63,6 +84,13 @@ function Navbar() {
                         variant="standard"
                         
                     />
+
+      <Badge badgeContent={2} color="warning" sx={{margin:'0px 10px'}}>
+          <FaBasketShopping style={{fontSize:'20px',cursor:'pointer'}} />
+
+      </Badge>
+
+     
 
       <Button
        onClick={logout}
